@@ -10,6 +10,7 @@ function initializeSwipers() {
     speed: 500,
     loop: true,
     slidesPerView: 1,
+    spaceBetween: 20,
     allowTouchMove: true,
     effect: "slide",
     threshold: 10,
@@ -24,7 +25,9 @@ function initializeSwipers() {
     },
     on: {
       init: function (swiper) {
-        swiper.slides.forEach((slide) => (slide.style.opacity = 0));
+        if (window.innerWidth > 767) {
+          swiper.slides.forEach((slide) => (slide.style.opacity = 0));
+        }
         swiper.slides[swiper.activeIndex].style.opacity = 1;
       },
     },
@@ -88,8 +91,20 @@ function initializeSwipers() {
   contentSwiper.controller.control = photoSwiper;
 
   // add cubic-bezier easing function to the swiper wrapper
-  document.querySelectorAll(".swiper-wrapper").forEach((wrapper) => {
-    wrapper.style.transitionTimingFunction = "cubic-bezier(0.65, 0, 0.35, 1)";
+  if (window.innerWidth > 767) {
+    document.querySelectorAll(".swiper-wrapper").forEach((wrapper) => {
+      wrapper.style.transitionTimingFunction = "cubic-bezier(0.65, 0, 0.35, 1)";
+    });
+  }
+  window.addEventListener("resize", () => {
+    document.querySelectorAll(".swiper-wrapper").forEach((wrapper) => {
+      if (window.innerWidth <= 767) {
+        wrapper.style.transitionTimingFunction = "";
+      } else {
+        wrapper.style.transitionTimingFunction =
+          "cubic-bezier(0.65, 0, 0.35, 1)";
+      }
+    });
   });
 
   // Improve transition performance
