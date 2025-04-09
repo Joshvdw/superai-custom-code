@@ -1,6 +1,5 @@
 // NEW SLIDER VERSION
 let contentSwiper, photoSwiper;
-let isSyncing = false;
 let previousActiveRealIndex;
 
 function initializeSwipers() {
@@ -8,13 +7,20 @@ function initializeSwipers() {
   if (photoSwiper) photoSwiper.destroy();
 
   contentSwiper = new Swiper(".swiper.is-content", {
-    speed: 800,
+    speed: 500,
     loop: true,
     slidesPerView: 1,
     allowTouchMove: true,
     effect: "slide",
+    threshold: 10,
+    touchRatio: 1.5,
+    freeMode: false,
+    longSwipes: false,
+    slidesPerGroup: 1,
+    resistanceRatio: 0,
+    touchMoveStopPropagation: true,
     breakpoints: {
-      480: { allowTouchMove: false },
+      480: { allowTouchMove: true, slidesPerView: "auto" },
     },
     on: {
       init: function (swiper) {
@@ -25,11 +31,18 @@ function initializeSwipers() {
   });
 
   photoSwiper = new Swiper(".swiper.is-photos", {
-    speed: 800,
+    speed: 500,
     loop: true,
     slidesPerView: 1,
     spaceBetween: 20,
     allowTouchMove: true,
+    threshold: 10,
+    touchRatio: 1.5,
+    freeMode: false,
+    longSwipes: false,
+    slidesPerGroup: 1,
+    resistanceRatio: 0,
+    touchMoveStopPropagation: true,
     pagination: {
       el: ".pagination-container",
       clickable: true,
@@ -44,8 +57,8 @@ function initializeSwipers() {
     controller: { control: contentSwiper },
     breakpoints: {
       480: {
-        allowTouchMove: false,
-        slidesPerView: 2,
+        allowTouchMove: true,
+        slidesPerView: "auto",
       },
     },
     on: {
@@ -59,7 +72,7 @@ function initializeSwipers() {
         );
         if (fadeElement) {
           fadeElement.style.transition =
-            "opacity 0.8s cubic-bezier(0.65, 0, 0.35, 1)";
+            "opacity 0.5s cubic-bezier(0.65, 0, 0.35, 1)";
           requestAnimationFrame(() => {
             fadeElement.style.opacity = 1;
           });
@@ -71,13 +84,8 @@ function initializeSwipers() {
     },
   });
 
-  photoSwiper.on("slideChange", (swiper) => {
-    if (!isSyncing) {
-      isSyncing = true;
-      contentSwiper.slideTo(swiper.realIndex, swiper.params.speed);
-      isSyncing = false;
-    }
-  });
+  photoSwiper.controller.control = contentSwiper;
+  contentSwiper.controller.control = photoSwiper;
 
   // add cubic-bezier easing function to the swiper wrapper
   document.querySelectorAll(".swiper-wrapper").forEach((wrapper) => {
@@ -88,19 +96,8 @@ function initializeSwipers() {
   document
     .querySelectorAll(".swiper.is-content .swiper-slide")
     .forEach((slide) => {
-      slide.style.willChange = "opacity"; // Improve transition performance
+      slide.style.willChange = "opacity";
     });
 }
 
 window.addEventListener("DOMContentLoaded", initializeSwipers);
-
-// // Add cubic-bezier easing function
-// function cubicBezier(t, p1, p2, p3, p4) {
-//   const t1 = 1 - t;
-//   return (
-//     Math.pow(t1, 3) * p1 +
-//     3 * Math.pow(t1, 2) * t * p2 +
-//     3 * t1 * Math.pow(t, 2) * p3 +
-//     Math.pow(t, 3) * p4
-//   );
-// }
