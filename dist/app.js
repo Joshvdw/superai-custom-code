@@ -596,9 +596,10 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 }
 
 },{}],"3IqzW":[function(require,module,exports,__globalThis) {
+// NEW SLIDER VERSION
 let contentSwiper, photoSwiper;
 let isSyncing = false;
-let previousActiveRealIndex; // Track the real index of the outgoing slide
+let previousActiveRealIndex;
 function initializeSwipers() {
     if (contentSwiper) contentSwiper.destroy();
     if (photoSwiper) photoSwiper.destroy();
@@ -606,17 +607,26 @@ function initializeSwipers() {
         speed: 800,
         loop: true,
         slidesPerView: 1,
-        allowTouchMove: false,
-        // resistanceRatio: 0,
-        effect: "slide"
+        allowTouchMove: true,
+        effect: "slide",
+        breakpoints: {
+            480: {
+                allowTouchMove: false
+            }
+        },
+        on: {
+            init: function(swiper) {
+                swiper.slides.forEach((slide)=>slide.style.opacity = 0);
+                swiper.slides[swiper.activeIndex].style.opacity = 1;
+            }
+        }
     });
     photoSwiper = new Swiper(".swiper.is-photos", {
         speed: 800,
         loop: true,
-        parallax: true,
-        slidesPerView: 2,
-        spaceBetween: 10,
-        allowTouchMove: false,
+        slidesPerView: 1,
+        spaceBetween: 20,
+        allowTouchMove: true,
         pagination: {
             el: ".pagination-container",
             clickable: true,
@@ -631,11 +641,17 @@ function initializeSwipers() {
         controller: {
             control: contentSwiper
         },
+        breakpoints: {
+            480: {
+                allowTouchMove: false,
+                slidesPerView: 2
+            }
+        },
         on: {
             slideChange (swiper) {
-                document.querySelectorAll(".testimonials_logo").forEach((el)=>el.style.opacity = 0);
+                document.querySelectorAll(".testimonial_border-img").forEach((el)=>el.style.opacity = 0);
                 const activeSlide = swiper.slides[swiper.activeIndex];
-                const fadeElement = activeSlide.querySelector(".testimonials_logo");
+                const fadeElement = activeSlide.querySelector(".testimonial_border-img");
                 if (fadeElement) {
                     fadeElement.style.transition = "opacity 0.8s cubic-bezier(0.65, 0, 0.35, 1)";
                     requestAnimationFrame(()=>{
@@ -644,7 +660,6 @@ function initializeSwipers() {
                 }
             },
             beforeTransitionStart (swiper) {
-                // Capture real index before transition starts
                 previousActiveRealIndex = swiper.realIndex;
             }
         }
@@ -656,16 +671,25 @@ function initializeSwipers() {
             isSyncing = false;
         }
     });
+    // add cubic-bezier easing function to the swiper wrapper
     document.querySelectorAll(".swiper-wrapper").forEach((wrapper)=>{
         wrapper.style.transitionTimingFunction = "cubic-bezier(0.65, 0, 0.35, 1)";
     });
+    // Improve transition performance
+    document.querySelectorAll(".swiper.is-content .swiper-slide").forEach((slide)=>{
+        slide.style.willChange = "opacity"; // Improve transition performance
+    });
 }
-window.addEventListener("DOMContentLoaded", initializeSwipers);
-// Add cubic-bezier easing function
-function cubicBezier(t, p1, p2, p3, p4) {
-    const t1 = 1 - t;
-    return Math.pow(t1, 3) * p1 + 3 * Math.pow(t1, 2) * t * p2 + 3 * t1 * Math.pow(t, 2) * p3 + Math.pow(t, 3) * p4;
-}
+window.addEventListener("DOMContentLoaded", initializeSwipers); // // Add cubic-bezier easing function
+ // function cubicBezier(t, p1, p2, p3, p4) {
+ //   const t1 = 1 - t;
+ //   return (
+ //     Math.pow(t1, 3) * p1 +
+ //     3 * Math.pow(t1, 2) * t * p2 +
+ //     3 * t1 * Math.pow(t, 2) * p3 +
+ //     Math.pow(t, 3) * p4
+ //   );
+ // }
 
 },{}]},["a1GsQ","3IqzW"], "3IqzW", "parcelRequire94c2")
 
