@@ -610,12 +610,17 @@ function initializeSwipers() {
         allowTouchMove: true,
         effect: "slide",
         threshold: 10,
-        touchRatio: 1.5,
+        touchRatio: 1,
         freeMode: false,
         longSwipes: false,
         slidesPerGroup: 1,
         resistanceRatio: 0,
         touchMoveStopPropagation: true,
+        navigation: {
+            nextEl: ".swiper_arrow.is-right.is-content",
+            prevEl: ".swiper_arrow.is-left.is-content"
+        },
+        // controller: { control: photoSwiper },
         breakpoints: {
             480: {
                 allowTouchMove: true,
@@ -635,8 +640,9 @@ function initializeSwipers() {
         slidesPerView: 1,
         spaceBetween: 20,
         allowTouchMove: true,
+        effect: "slide",
         threshold: 10,
-        touchRatio: 1.5,
+        touchRatio: 1,
         freeMode: false,
         longSwipes: false,
         slidesPerGroup: 1,
@@ -650,12 +656,10 @@ function initializeSwipers() {
             }
         },
         navigation: {
-            nextEl: ".swiper_arrow.is-right",
-            prevEl: ".swiper_arrow.is-left"
+            nextEl: ".swiper_arrow.is-right.is-photos",
+            prevEl: ".swiper_arrow.is-left.is-photos"
         },
-        controller: {
-            control: contentSwiper
-        },
+        // controller: { control: contentSwiper },
         breakpoints: {
             480: {
                 allowTouchMove: true,
@@ -663,6 +667,20 @@ function initializeSwipers() {
             }
         },
         on: {
+            init () {
+                adjustPhotoSwiperWidth();
+                // Add click event listeners to photo swiper arrows
+                const photoNextArrow = document.querySelector(".swiper_arrow.is-right.is-photos");
+                const photoPrevArrow = document.querySelector(".swiper_arrow.is-left.is-photos");
+                const contentNextArrow = document.querySelector(".swiper_arrow.is-right.is-content");
+                const contentPrevArrow = document.querySelector(".swiper_arrow.is-left.is-content");
+                if (photoNextArrow && contentNextArrow) photoNextArrow.addEventListener("click", ()=>{
+                    contentNextArrow.click();
+                });
+                if (photoPrevArrow && contentPrevArrow) photoPrevArrow.addEventListener("click", ()=>{
+                    contentPrevArrow.click();
+                });
+            },
             slideChange (swiper) {
                 document.querySelectorAll(".testimonial_border-img").forEach((el)=>el.style.opacity = 0);
                 const activeSlide = swiper.slides[swiper.activeIndex];
@@ -679,8 +697,26 @@ function initializeSwipers() {
             }
         }
     });
-    photoSwiper.controller.control = contentSwiper;
-    contentSwiper.controller.control = photoSwiper;
+    // Delay controller linking to avoid immediate triggering
+    // setTimeout(() => {
+    // if (photoSwiper.controller && contentSwiper) {
+    // photoSwiper.controller.control = contentSwiper;
+    // }
+    // if (contentSwiper.controller && photoSwiper) {
+    // contentSwiper.controller.control = photoSwiper;
+    // }
+    // }, 100); // Adjust the delay if necessary
+    // Function to adjust the width for photoSwiper after initialization
+    function adjustPhotoSwiperWidth() {
+        document.querySelectorAll(".swiper-slide.is-photos").forEach((slide)=>{
+            slide.classList.add("force-width");
+        // slide.style.width = "50%!important";
+        });
+    }
+    // Ensuring the width is set correctly when resizing the window
+    window.addEventListener("resize", ()=>{
+        adjustPhotoSwiperWidth(); // Reapply 50% width on window resize
+    });
     // add cubic-bezier easing function to the swiper wrapper
     if (window.innerWidth > 767) document.querySelectorAll(".swiper-wrapper").forEach((wrapper)=>{
         wrapper.style.transitionTimingFunction = "cubic-bezier(0.65, 0, 0.35, 1)";
