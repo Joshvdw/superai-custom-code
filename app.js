@@ -59,6 +59,7 @@ function initializeSwipers() {
     slidesPerGroup: 1,
     resistanceRatio: 0,
     touchMoveStopPropagation: true,
+    parallax: true,
     // add pagination on mobile
     pagination: {
       el: ".pagination-container",
